@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose= require('mongoose');
 // --------------------IMPORTER LES ROUTES--------------------
 const userRoute=require('./routes/userRoute');
-// const sauceRoute= require('./routes/sausceRoute');
+const sauceRoute= require('./routes/sauceRoute');
 
 
 mongoose.connect('mongodb+srv://p6:p6@cluster0.8s4p9v0.mongodb.net/?retryWrites=true&w=majority',
@@ -25,6 +25,6 @@ app.use((req, res, next) => {
   
   // -------------------IMPLEMENTER LES ROUTES DANS L'APPLICATION------------------------------
   app.use('/api/auth',userRoute)
-  // app.use('api/',sauceRoute);
+  app.use('/api/saucess',sauceRoute);
 
 module.exports = app;

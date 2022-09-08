@@ -3,7 +3,7 @@ const mongoose= require('mongoose');
 // --------------------IMPORTER LES ROUTES--------------------
 const userRoute=require('./routes/userRoute');
 const sauceRoute= require('./routes/sauceRoute');
-
+const path = require('path');
 
 mongoose.connect('mongodb+srv://p6:p6@cluster0.8s4p9v0.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
@@ -22,9 +22,11 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
   });
-  
+  app.use(express.json());
+  app.use('/images',express.static(path.join(__dirname,'images')));
+
   // -------------------IMPLEMENTER LES ROUTES DANS L'APPLICATION------------------------------
   app.use('/api/auth',userRoute)
-  app.use('/api/saucess',sauceRoute);
+  app.use('/api/sauces',sauceRoute);
 
 module.exports = app;

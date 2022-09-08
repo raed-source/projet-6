@@ -2,20 +2,24 @@ const Sauce= require('../models/sauceModel');
 
 // ------------CREER NOUVEAU SOUCE--------------------------
 exports.createSauce=(req, res, next) => {
+  const sauceObject = JSON.parse(req.body.sauce);
+  delete sauceObject._id;
+  console.log('createsauce')
     const sauce = new Sauce({
+      ...sauceObject,
         // userId: { type: String, required: true },
         // name: { type: String, required: true },
-        _id: req.params.id,
-        manufacturer: req.body.manufacturer,
-        description: req.body.description,
-        heat:req.body.heat,
-        likes:req.body.likes,
-        dislikes:req.body.dislikes,
-        imageUrl: req.body.imageUrl,
-        mainPepper:req.body.mainPepper,
-        usersLiked:req.body.usersLiked,
-        usersDisliked:req.body.usersDisliked,
-        userId: req.body.userId
+        // _id: req.params.id,
+        // manufacturer: req.body.manufacturer,
+        // description: req.body.description,
+        // heat:req.body.heat,
+        likes:0,
+        dislikes:0,
+        imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}` ,
+        // mainPepper:req.body.mainPepper,
+        usersLiked:[],
+        usersDisliked:[],
+        // userId: req.body.userId
       });
       sauce.save().then(
         () => {
@@ -49,20 +53,11 @@ exports.getOneSauce=(req, res, next) => {
 };
 // ----------------------MODIFY LE SAUCE------------------------------
 exports.modifySauce = (req, res, next) => {
-    const sauce = new Sauce({
-      _id: req.params.id,
-      manufacturer: req.body.manufacturer,
-      description: req.body.description,
-      heat:req.body.heat,
-      likes:req.body.likes,
-      dislikes:req.body.dislikes,
-      imageUrl: req.body.imageUrl,
-      mainPepper:req.body.mainPepper,
-      usersLiked:req.body.usersLiked,
-      usersDisliked:req.body.usersDisliked,
-      userId: req.body.userId
-    });
-    Sauce.updateOne({_id: req.params.id}, sauce).then(
+  const sauceObject = req.file ? {
+    ...JSON.parse(req.body.sauce),
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+} : { ...req.body };
+    Sauce.updateOne({_id: req.params.id}, sauceObject).then(
       () => {
         res.status(201).json({
           message: 'Sauce updated successfully!'
@@ -94,6 +89,7 @@ exports.deleteSauce = (req, res, next) => {
   };
 // --------------------RECUPERER TOUTES LES SAUCES--------------------
 exports.getAllSauces=(req, res, next) => {
+  console.log('all sauces');
     Sauce.find().then(
         (sauces) => {
           res.status(200).json(sauces);

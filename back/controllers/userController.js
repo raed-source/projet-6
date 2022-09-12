@@ -14,7 +14,7 @@ exports.signup = (req, res, next) => {
     const validPassword = Password.validate(req.body.password);
     console.log(validEmail);
 if(validEmail===true && validPassword===true){
-    bcrypt.hash(password, 10)
+    bcrypt.hash(req.body.password, 10)
       .then((hash) => {
         const user = new User({
             email:req.body.email,

@@ -1,16 +1,23 @@
 const User= require('../models/userModel');
+var Password = require("../models/passwordModel");
+
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
+const validator=require('validator');
 
 
 
 // ------------------------FONCTION SIGNUP---------------------------------
 exports.signup = (req, res, next) => {
-    console.log('signup')
-    bcrypt.hash(req.body.password, 10)
-      .then(hash => {
+    console.log('signup');
+    const validEmail= validator.isEmail(req.body.email);
+    const validPassword = Password.validate(req.body.password);
+    console.log(validEmail);
+if(validEmail===true && validPassword===true){
+    bcrypt.hash(password, 10)
+      .then((hash) => {
         const user = new User({
-          email: req.body.email,
+            email:req.body.email,
           password: hash
         });
         user.save()
@@ -18,6 +25,13 @@ exports.signup = (req, res, next) => {
           .catch(error => res.status(400).json({ error }));
       })
       .catch(error => res.status(500).json({ error }));
+    }else{
+
+        console.log(
+          "(not = caratère invalide) manquant au mot de passe: " +
+            Password.validate(req.body.password, { list: true })
+        );
+    }
   };
 
 

@@ -103,3 +103,57 @@ exports.getAllSauces=(req, res, next) => {
     );
       
 };
+
+// ------------------------LIKE SAUCE-----------------------
+exports.likeSauce = (req, res, next) => {
+  Sauce.findOne({ _id: req.params.id })
+    .then((sauce) => {
+      let vot;
+      let votant = req.body.userId;
+      let like = sauce.usersLiked;
+      let unlike = sauce.usersDisliked;
+      let bon = like.includes(votant);
+      let mauvais = unlike.includes(votant);
+      if (bon === true) {
+        vot = 1;
+      } else if (mauvais === true) {
+        vot = -1;
+      } else {
+        vot = 0;
+      }
+
+      if (vot === 0 && req.body.like === 1) {
+        sauce.likes += 1;
+        sauce.usersLiked.push(votant);
+      } else if (vot === 1 && req.body.like === 0) {
+        sauce.likes -= 1;
+        const nouveauUsersLiked = like.filter((f) => f != votant);
+        sauce.usersLiked = nouveauUsersLiked;
+      } else if (vot === -1 && req.body.like === 0) {
+        sauce.dislikes -= 1;
+        const nouveauUsersDisliked = unlike.filter((f) => f != votant);
+        sauce.usersDisliked = nouveauUsersDisliked;
+      } else if (vot === 0 && req.body.like === -1) {
+        sauce.dislikes += 1;
+        sauce.usersDisliked.push(votant);
+      } else {
+        console.log("tentavive de vote illégal");
+      }
+      Sauce.updateOne(
+        { _id: req.params.id },
+        {
+          likes: sauce.likes,
+          dislikes: sauce.dislikes,
+          usersLiked: sauce.usersLiked,
+          usersDisliked: sauce.usersDisliked,
+        }
+      )
+        .then(() => res.status(201).json({ message: "Vous venez de voter" }))
+        .catch((error) => {
+          if (error) {
+            console.log(error);
+          }
+        });
+    })
+    // si erreur envoit un status 404 Not Found et l'erreur en json
+    .catch((error) => res.status(404).json({ error }));}

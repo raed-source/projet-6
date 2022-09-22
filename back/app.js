@@ -5,7 +5,7 @@ const helmet=require('helmet');
 // --------------------IMPORTER LES ROUTES--------------------
 
 const path = require('path');
-mongoose.connect(`mongodb+srv://${process.env.USER_DB}:${process.env.MDP}@cluster0.8s4p9v0.mongodb.net/?retryWrites=true&w=majority`,
+mongoose.connect(`mongodb+srv://${process.env.USER_DB}:${process.env.MDP}@${process.env.DB_CLUSTER}/?retryWrites=true&w=majority`,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))

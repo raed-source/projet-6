@@ -1,38 +1,26 @@
-const User= require('../models/userModel');
-var Password = require("../models/passwordModel");
+const User = require('../models/userModel');
 
-const bcrypt=require('bcrypt');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const validator=require('validator');
+const validator = require('validator');
 
 
 
 // ------------------------FONCTION SIGNUP---------------------------------
 exports.signup = (req, res, next) => {
     console.log('signup');
-    const validEmail= validator.isEmail(req.body.email);
-    const validPassword = Password.validate(req.body.password);
-    console.log(validEmail);
-if(validEmail===true && validPassword===true){
     bcrypt.hash(req.body.password, 10)
-      .then((hash) => {
-        const user = new User({
-            email:req.body.email,
-          password: hash
-        });
-        user.save()
-          .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-          .catch(error => res.status(400).json({ error }));
-      })
-      .catch(error => res.status(500).json({ error }));
-    }else{
-
-        console.log(
-          "(not = caratère invalide) manquant au mot de passe: " +
-            Password.validate(req.body.password, { list: true })
-        );
-    }
-  };
+        .then((hash) => {
+            const user = new User({
+                email: req.body.email,
+                password: hash
+            });
+            user.save()
+                .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+                .catch(error => res.status(400).json({ error }));
+        })
+        .catch(error => res.status(500).json({ error }));
+};
 
 
 // ---------------------------------FONCTION LOGIN----------------------------------
@@ -51,7 +39,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            'RANDOM_TOKEN_SECRET',
+                            process.env.RANDOM_TOKEN_SECRET,
                             { expiresIn: '24h' }
                         )
                     });
@@ -59,4 +47,4 @@ exports.login = (req, res, next) => {
                 .catch(error => res.status(500).json({ error }));
         })
         .catch(error => res.status(500).json({ error }));
- };
+};

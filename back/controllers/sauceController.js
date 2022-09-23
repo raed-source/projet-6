@@ -23,7 +23,7 @@ exports.createSauce = (req, res, next) => {
   });
   sauce.save().then(
     () => {
-      res.status(201).json({
+      res.status(200).json({
         message: 'Post saved successfully!'
       });
     }
@@ -37,6 +37,7 @@ exports.createSauce = (req, res, next) => {
 };
 //---------------------RECUPERER UNE SAUCE--------------------------
 exports.getOneSauce = (req, res, next) => {
+  console.log('ce sauces');
   Sauce.findOne({
     _id: req.params.id
   }).then(
@@ -52,14 +53,21 @@ exports.getOneSauce = (req, res, next) => {
   );
 };
 // ----------------------MODIFY LE SAUCE------------------------------
-exports.modifySauce = (req, res, next) => {
+exports.modifySauce = (req, res, next) => { 
+  console.log('modifier sauces');
   const sauceObject = req.file ? {
     ...JSON.parse(req.body.sauce),
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   } : { ...req.body };
-  Sauce.updateOne({ _id: req.params.id }, sauceObject).then(
+
+  // if (sauce.userId !== req.auth.userId) {
+  //   console.log(sauce.userId);
+  //   return res.status(401).json({ error: new Error('Vous ne pouvez pas modifier cette sauce') })
+  // }
+  Sauce.updateOne({ _id: req.params.id }, {sauceObject,_id:req.params.id}).then(
     () => {
-      res.status(201).json({
+      console.log('Sauce modifié !');
+      res.status(200).json({
         message: 'Sauce updated successfully!'
       });
     }
@@ -73,6 +81,7 @@ exports.modifySauce = (req, res, next) => {
 };
 //   -------------------DELETE SAUCE-------------------------------------
 exports.deleteSauce = (req, res, next) => {
+  console.log('supprimer sauces');
   Sauce.deleteOne({ _id: req.params.id }).then(
     () => {
       res.status(200).json({
@@ -170,18 +179,18 @@ exports.likeSauce = (req, res, next) => {
       } else if (req.body.like === -1) {
         sauce.usersDisliked.push(req.body.userId);
       } else if (req.body.like === 0) {
-        if (sauce.usersLiked.includes(req.body.userId)) {
+        if (sauce.usersLiked.includes(req.body.userId) === true) {
           const userIdIndex = sauce.usersLiked.indexOf(req.body.userId);
           sauce.usersLiked.splice(userIdIndex, 1);
         }
-        if (sauce.usersDisliked.includes(req.body.userId)) {
+        if (sauce.usersDisliked.includes(req.body.userId) === true) {
           const userIdIndexDisliked = sauce.usersDisliked.indexOf(req.body.userId);
           sauce.usersDisliked.splice(userIdIndexDisliked, 1);
         }
 
       }
-      sauce.likes=sauce.usersLiked.length;
-      sauce.dislikes=sauce.usersDisliked.length;
+      sauce.likes = sauce.usersLiked.length;
+      sauce.dislikes = sauce.usersDisliked.length;
       Sauce.updateOne(
         { _id: req.params.id },
         {

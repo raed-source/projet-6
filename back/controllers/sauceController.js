@@ -153,7 +153,7 @@ exports.getAllSauces = (req, res, next) => {
 //           usersDisliked: sauce.usersDisliked,
 //         }
 //       )
-//         .then(() => res.status(201).json({ message: "Vous venez de voter" }))
+//         .then(() => res.status(200).json({ message: "Vous venez de voter" }))
 //         .catch((error) => {
 //           if (error) {
 //             console.log(error);
@@ -196,7 +196,7 @@ exports.likeSauce = (req, res, next) => {
           usersDisliked: sauce.usersDisliked,
         }
       )
-        .then(() => res.status(201).json({ message: "Vous venez de voter" }))
+        .then(() => res.status(200).json({ message: "Vous venez de voter" }))
         .catch((error) => {
           if (error) {
             console.log(error);

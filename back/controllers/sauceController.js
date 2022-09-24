@@ -54,22 +54,25 @@ exports.getOneSauce = (req, res, next) => {
 };
 // ----------------------MODIFY LE SAUCE------------------------------
 exports.modifySauce = (req, res, next) => { 
+
   console.log('modifier sauces');
   const sauceObject = req.file ? {
     ...JSON.parse(req.body.sauce),
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   } : { ...req.body };
+  console.log(sauceObject);
 
-  // if (sauce.userId !== req.auth.userId) {
-  //   console.log(sauce.userId);
-  //   return res.status(401).json({ error: new Error('Vous ne pouvez pas modifier cette sauce') })
-  // }
-  Sauce.updateOne({ _id: req.params.id }, {sauceObject,_id:req.params.id}).then(
+  Sauce.updateOne({ _id: req.params.id }, {sauceObject,_id:req.params.id})
+  .then(
     () => {
+
       console.log('Sauce modifié !');
       res.status(200).json({
         message: 'Sauce updated successfully!'
+        
       });
+      
+    
     }
   ).catch(
     (error) => {

@@ -7,19 +7,12 @@ exports.createSauce = (req, res, next) => {
   console.log('createsauce')
   const sauce = new Sauce({
     ...sauceObject,
-    // userId: { type: String, required: true },
-    // name: { type: String, required: true },
-    // _id: req.params.id,
-    // manufacturer: req.body.manufacturer,
-    // description: req.body.description,
-    // heat:req.body.heat,
+ 
     likes: 0,
     dislikes: 0,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
-    // mainPepper:req.body.mainPepper,
     usersLiked: [],
     usersDisliked: [],
-    // userId: req.body.userId
   });
   sauce.save().then(
     () => {

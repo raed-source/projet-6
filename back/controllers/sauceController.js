@@ -1,4 +1,5 @@
 const Sauce = require('../models/sauceModel');
+const fs = require('fs');
 
 // ------------CREER NOUVEAU SOUCE--------------------------
 exports.createSauce = (req, res, next) => {
@@ -7,7 +8,7 @@ exports.createSauce = (req, res, next) => {
   console.log('createsauce')
   const sauce = new Sauce({
     ...sauceObject,
- 
+
     likes: 0,
     dislikes: 0,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
@@ -46,7 +47,7 @@ exports.getOneSauce = (req, res, next) => {
   );
 };
 // ----------------------MODIFY LE SAUCE------------------------------
-exports.modifySauce = (req, res, next) => { 
+exports.modifySauce = (req, res, next) => {
 
   console.log('modifier sauces');
   const sauceObject = req.file ? {
@@ -54,43 +55,52 @@ exports.modifySauce = (req, res, next) => {
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   } : { ...req.body };
   console.log(sauceObject);
-
-  Sauce.updateOne({ _id: req.params.id }, {sauceObject,_id:req.params.id})
-  .then(
-    () => {
-
-      console.log('Sauce modifié !');
-      res.status(200).json({
-        message: 'Sauce updated successfully!'
-        
-      });
-      
-    
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+  console.log(req.auth.userId);
+  if (sauceObject.userId !== req.auth.userId) {
+    return res.status(401).json({ error: new Error('Vous ne pouvez pas modifier cette sauce') })
+  }
+  Sauce.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
+    .then(
+      () => {
+        console.log('Sauce modifié !');
+        res.status(200).json({
+          message: 'Sauce updated successfully!'
+        });
+      }
+    ).catch(
+      (error) => {
+        res.status(400).json({
+          error: error
+        });
+      }
+    );
 };
 //   -------------------DELETE SAUCE-------------------------------------
 exports.deleteSauce = (req, res, next) => {
   console.log('supprimer sauces');
-  Sauce.deleteOne({ _id: req.params.id }).then(
-    () => {
-      res.status(200).json({
-        message: 'Deleted!'
-      });
-    }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+  Sauce.findOne({ _id: req.params.id })
+    .then((sauce) => {
+      if (sauce.userId !== req.auth.userId) {
+        return res.status(401).json({ error: new Error('Vous ne pouvez pas modifier cette sauce') })
+      }
+      const filename = sauce.imageUrl.split('/images/')[1]
+      fs.unlink(`images/${filename}`, () => {
+        Sauce.deleteOne({ _id: req.params.id }).then(
+          () => {
+            res.status(200).json({
+              message: 'Deleted!'
+            });
+          }
+        ).catch(
+          (error) => {
+            res.status(400).json({
+              error: error
+            });
+          }
+        );
+      })
+    })
+
 };
 // --------------------RECUPERER TOUTES LES SAUCES--------------------
 exports.getAllSauces = (req, res, next) => {

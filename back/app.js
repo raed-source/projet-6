@@ -13,7 +13,7 @@ mongoose.connect(`mongodb+srv://${process.env.USER_DB}:${process.env.MDP}@${proc
 
 
 const app = express();
-app.use(helmet());
+// app.use(helmet());
 const userRoute=require('./routes/userRoute');
 const sauceRoute= require('./routes/sauceRoute');
 // ---------------HEADERS-------------------------------------

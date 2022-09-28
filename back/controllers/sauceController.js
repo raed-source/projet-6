@@ -185,15 +185,21 @@ exports.likeSauce = (req, res, next) => {
       } else if (req.body.like === -1) {
         sauce.usersDisliked.push(req.body.userId);
       } else if (req.body.like === 0) {
+        // if (sauce.usersLiked.includes(req.body.userId) === true) {
+        //   const userIdIndex = sauce.usersLiked.indexOf(req.body.userId);
+        //   sauce.usersLiked.splice(userIdIndex, 1);
+        // }
+        // if (sauce.usersDisliked.includes(req.body.userId) === true) {
+        //   const userIdIndexDisliked = sauce.usersDisliked.indexOf(req.body.userId);
+        //   sauce.usersDisliked.splice(userIdIndexDisliked, 1);
+        // }
         if (sauce.usersLiked.includes(req.body.userId) === true) {
           const userIdIndex = sauce.usersLiked.indexOf(req.body.userId);
           sauce.usersLiked.splice(userIdIndex, 1);
-        }
-        if (sauce.usersDisliked.includes(req.body.userId) === true) {
+        } else {
           const userIdIndexDisliked = sauce.usersDisliked.indexOf(req.body.userId);
           sauce.usersDisliked.splice(userIdIndexDisliked, 1);
         }
-
       }
       sauce.likes = sauce.usersLiked.length;
       sauce.dislikes = sauce.usersDisliked.length;
